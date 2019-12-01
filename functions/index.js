@@ -1,97 +1,32 @@
 const functions = require("firebase-functions");
-//exports.helloWorld = functions.https.onRequest((request, response) => {
-const {
-  createWriteStream: writeStr,
-  createReadStream: readStr
-} = require("fs");
-const jimp = require("jimp");
-const Busboy = require("busboy");
-const path = require("path");
-const os = require("os");
-const cors = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Methods": "GET,POST,PUT,DELETE,OPTIONS",
-  "Access-Control-Allow-Headers":
-    "cors,my,Content-Type,Accept,Access-Control-Allow-Headers"
-};
-exports.helloWorld = functions.https.onRequest((r, rs) => {
-  if (r.method == "GET") {
-    readStr("./index.html").pipe(r.res);
-    return;
-  }
-  if (r.method == "POST") {
-    console.log("1");
-    const d = { "Content-type": "image/jpeg" };
-    console.log("2");
-    rs.writeHead(200, { ...d, ...cors });
-    console.log("3");
-    const busboy = new Busboy({ headers: r.headers });
-    console.log("TCL: busboy", busboy)
-    const tmpdir = os.tmpdir();
-    console.log("TCL: tmpdir", tmpdir)
-    const fields = {};
-    const uploads = {};
-    console.log("TCL: fields", fields)
-    console.log("TCL: uploads", uploads)
-    const fileWrites = [];
-    console.log("TCL: fileWrites", fileWrites)
-    // This code will process each file uploaded.
-    busboy.on("file", (fieldname, file, filename) => {
-      // Note: os.tmpdir() points to an in-memory file system on GCF
-      // Thus, any files in it must fit in the instance's memory.
-      console.log(`Processed file ${filename}`);
-      const filepath = path.join(tmpdir, filename);
-      uploads[fieldname] = filepath;
+const nodemailer = require("nodemailer");
+const cors = require("cors")({ origin: true });
+const {createReadStream: readStr} = require("fs");
+const mailTransport = nodemailer.createTransport({
+  service: "gmail"
+});
 
-      const writeStream = fs.createWriteStream(filepath);
-      file.pipe(writeStream);
+exports.mailer = functions.https.onRequest((req, res) => {
+  cors(req, res, () => {
+    if (req.method !== "POST") {
+          readStr("./index.html").pipe(req.res);
+      return; 
+    }
 
-      // File was processed by Busboy; wait for it to be written to disk.
-      const promise = new Promise((resolve, reject) => {
-        file.on("end", () => {
-          writeStream.end();
-        });
-        writeStream.on("finish", resolve);
-        writeStream.on("error", reject);
-      });
-      fileWrites.push(promise);
-    });
+    // const mailOptions = {
+    //   from: req.body.email,
+    //   replyTo: req.body.email,
+    //   to: "quemsaurose@gmail.com",
+    //   subject: `from my website ${req.body.email}`,
+    //   text: req.body.message,
+    //   html: `<p>${req.body.message}`
+    // };
+    console.log(JSON.stringify(req.body));
 
-    // Triggered once all uploaded files are processed by Busboy.
-    // We still need to wait for the disk writes (saves) to complete.
-    busboy.on("finish", async () => {
-      await Promise.all(fileWrites);
+//    mailTransport.sendMail(mailOptions);
 
-      // TODO(developer): Process saved files here
-      for (const file of uploads) {
-        fs.unlinkSync(file);
-      }
-      res.send();
-    });
-
-    busboy.end(r.rawBody);
-    // const busboy = new Busboy({ headers: r.headers });
-    // const tmpIm1 = "/tmp/file1" + Math.random() + ".tmp";
-    // const tmpIm2 =
-    //   "/tmp/file1" + Math.random() + "_" + Math.random() + ".tmp";
-    // busboy
-    //   .on("file", (_, file) => {
-    //     file.pipe(writeStr(tmpIm1)).on("finish", () => {
-    //       jimp
-    //         .read(tmpIm1)
-    //         .then(x => x.flip(true, false))
-    //         .then(x =>
-    //           x.write(tmpIm2, e => {
-    //             if (!e) {
-    //               readStr(tmpIm2).pipe(rs);
-    //             } else {
-    //               rs.end(e.stack);
-    //             }
-    //           })
-    //         );
-    //     });
-    //   })
-    //   .on("error", e => rs.end("ERROR boy"));
-    // r.pipe(busboy);
-  }
+    res.status(200).end();
+    // or you can pass data to indicate success.
+    // res.status(200).send({isEmailSend: true});
+  });
 });

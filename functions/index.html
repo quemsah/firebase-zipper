@@ -8,11 +8,14 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-   <form method="post" id="form" action="http://localhost:5000/flopper/us-central1/helloWorld"
+   <form method="post" id="form" action="http://localhost:5000/flopper/us-central1/mailer"
          enctype="multipart/form-data" >
-     <input name="image" id="image" type="file">
-     <label for="image">Выберите файл</label><br><br>
+          <input name="email" id="email" type="text">
+     <label for="email">Выберите файл</label><br><br>
+          <input name="message" id="message" type="text">
+     <label for="message">Выберите файл</label><br><br>
      <input id="f1" type="submit" class="r"  value="Перевернуть" title="Отправить формой">
   </form>
 </body>
 </html>
+v
