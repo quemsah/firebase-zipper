@@ -1,21 +1,32 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <title></title>
-  <base href="/">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
-<body>
-   <form method="post" id="form" action="http://localhost:5000/flopper/us-central1/mailer"
-         enctype="multipart/form-data" >
-          <input name="email" id="email" type="text">
-     <label for="email">Выберите файл</label><br><br>
-          <input name="message" id="message" type="text">
-     <label for="message">Выберите файл</label><br><br>
-     <input id="f1" type="submit" class="r"  value="Перевернуть" title="Отправить формой">
-  </form>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <title></title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="form-group col-4">
+      <form
+        class="p-3 m-3"
+        method="post"
+        id="form"
+        action="http://localhost:5000/flopper/us-central1/mailer"
+      >
+        <input class="form-control" name="email" id="email" type="text" />
+        <label for="email">E-mail</label><br /><br />
+        <input class="form-control" name="message" id="message" type="text" />
+        <label for="message">Сообщение</label><br /><br />
+        <input id="f1" type="submit" value="Поехали" title="Отправить формой" />
+      </form>
+    </div>
+  </body>
 </html>
-v
