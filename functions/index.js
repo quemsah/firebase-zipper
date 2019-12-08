@@ -1,6 +1,7 @@
 const functions = require("firebase-functions");
 const { createReadStream: readStr } = require("fs");
 const zlib = require("zlib");
+const zzz = require("zlib");
 const Busboy = require("busboy");
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -9,35 +10,35 @@ const cors = {
     "cors,my,Content-Type,Accept,Access-Control-Allow-Headers"
 };
 
-exports.zipper = functions.https.onRequest((req, res) => {
-  if (req.method !== "POST") {
-    readStr("view/index.html").pipe(req.res);
-    return;
+exports.zipper = functions.https.onRequest((r, res) => {
+  if (r.method == "POST") {
+    var busboy = new Busboy({ headers: r.headers });
+    busboy.on("file", function(fieldname, file, filename, encoding, mimetype) {
+      console.log(
+        "File [" +
+          fieldname +
+          "]: filename: " +
+          filename +
+          ", encoding: " +
+          encoding +
+          ", mimetype: " +
+          mimetype
+      );
+      file.on("data", function(data) {
+        console.log("File [" + fieldname + "] got " + data.length + " bytes");
+      });
+      file.on("end", function() {
+        console.log("File [" + fieldname + "] Finished");
+      });
+    });
+    busboy.on("finish", function() {
+      console.log("Done parsing form!");
+      res.writeHead(303, { Connection: "close", Location: "/" });
+      res.end();
+    });
+    r.pipe(busboy);
   } else {
-    console.log("1");
-    const d = {
-      "Content-type": "application/zip",
-      "Content-disposition": "attachment; filename=result.zip"
-    };
-    console.log("2");
-    res.writeHead(200, {
-      ...d,
-      ...cors
-    });
-    console.log("3");
-    const z = zlib.createGzip();
-    console.log("4");
-    const busboy = new Busboy({
-      headers: req.headers
-    });
-    console.log("5");
-    z.on("error", e => res.end("ERROR zip"));
-    console.log("6");
-    busboy
-      .on("file", (_, file) => file.pipe(z).pipe(res))
-      .on("error", e => res.end("ERROR boy"));
-    console.log("7");
-    req.pipe(busboy);
-    console.log("8");
+    readStr("view/index.html").pipe(r.res);
+    return;
   }
 });
